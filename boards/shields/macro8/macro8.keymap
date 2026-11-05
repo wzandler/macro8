@@ -2,11 +2,32 @@
 #include <dt-bindings/zmk/keys.h>
 
 / {
+    behaviors {
+        // Tap twice = bootloader (single tap does nothing)
+        td_boot: tap_dance_boot {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <400>;
+            bindings = <&none>, <&bootloader>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+
+        // Keys 5 + 8 together (positions 4 and 7), pressed twice
+        combo_bootloader {
+            timeout-ms = <100>;
+            key-positions = <4 7>;
+            bindings = <&td_boot>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
         default_layer {
             bindings = <
-                &kp F14 &kp F15 &kp F16 &kp ESC &kp F18 &kp F19 &kp F13 &kp LGUI
+                &kp F14 &kp F15 &kp F16 &kp ESC &kp F18 &kp F19 &kp F13 &kp RET
             >;
         };
     };
