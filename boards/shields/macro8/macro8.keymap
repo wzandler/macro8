@@ -1,7 +1,17 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
 
 / {
+    macros {
+        // Wrapper so Bluetooth clear can be used inside a hold-tap
+        mac_btclr: macro_btclr {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &bt BT_CLR>;
+        };
+    };
+
     behaviors {
         // Tap twice = bootloader (single tap does nothing)
         td_boot: tap_dance_boot {
@@ -10,16 +20,58 @@
             tapping-term-ms = <400>;
             bindings = <&none>, <&bootloader>;
         };
+
+        // Hold 3 seconds = clear current Bluetooth pairing; a shorter press does nothing
+        // Usage: &ht_btclr 0 0
+        ht_btclr: hold_3s_btclr {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <3000>;
+            bindings = <&mac_btclr>, <&none>;
+        };
     };
 
     combos {
         compatible = "zmk,combos";
 
-        // Keys 5 + 8 together (positions 4 and 7), pressed twice
+        // Keys 5 + 8, pressed twice: reboot into the bootloader
         combo_bootloader {
             timeout-ms = <100>;
             key-positions = <4 7>;
             bindings = <&td_boot>;
+        };
+
+        // Keys 5 + 7, held 3 seconds: clear current Bluetooth pairing
+        combo_bluetooth_reset {
+            timeout-ms = <100>;
+            key-positions = <4 6>;
+            bindings = <&ht_btclr 0 0>;
+        };
+
+        // Keys 5 + 1..4: select Bluetooth device 1..4
+        combo_bluetooth_1 {
+            timeout-ms = <100>;
+            key-positions = <4 0>;
+            bindings = <&bt BT_SEL 0>;
+        };
+
+        combo_bluetooth_2 {
+            timeout-ms = <100>;
+            key-positions = <4 1>;
+            bindings = <&bt BT_SEL 1>;
+        };
+
+        combo_bluetooth_3 {
+            timeout-ms = <100>;
+            key-positions = <4 2>;
+            bindings = <&bt BT_SEL 2>;
+        };
+
+        combo_bluetooth_4 {
+            timeout-ms = <100>;
+            key-positions = <4 3>;
+            bindings = <&bt BT_SEL 3>;
         };
     };
 
